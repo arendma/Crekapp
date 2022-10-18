@@ -18,4 +18,4 @@ proteomics_dat$EX_ac_e=pred$fit+pred$se.fit
 proteomics_dat=rbind(proteomics_dat, c('dark', '0.02', '1.6')) #only set light for dark to zero, otherwise take default alvue
 proteomics_dat$EX_photonVis_e=c(rep(80, 8), 0)
 proteomics_dat$model=c(rep('mixo', 8), 'hetero')
-write.table(proteomics_dat, '/Data/QconCAT_David20220124/fitted_acup.tsv', row.names=FALSE, sep='\t')
+write.table(proteomics_dat, 'Data/QconCAT_David20220124/fitted_acup.tsv', row.names=FALSE, sep='\t')
