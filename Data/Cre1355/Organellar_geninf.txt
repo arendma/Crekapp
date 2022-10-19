@@ -1,0 +1,41 @@
+cre:ChreCp049	rbcL; ribulose-1,5-bisphosphate carboxylase/oxygenase large subunit
+cre:ChrepMp04	cox1; cytochrome oxidase subunit 1
+cre:ChrepMp01	cob; cytochrome b
+cre:ChrepMp02	nad4; NADH dehydrogenase subunit 4
+cre:ChrepMp03	nad5; NADH dehydrogenase subunit 5
+cre:ChrepMp05	nad2; NADH dehydrogenase subunit 2
+cre:ChrepMp06	nad6; NADH dehydrogenase subunit 6
+cre:ChrepMp07	nad1; NADH dehydrogenase subunit 1
+cre:ChreCp023	atpE; ATP synthase CF1 epsilon subunit
+cre:ChreCp050	atpA; ATP synthase CF1 alpha subunit
+cre:ChreCp053	atpH; ATP synthase CF0 C subunit
+cre:ChreCp054	atpF; ATP synthase CF0 B subunit
+cre:ChreCp058	atpB; ATP synthase CF1 beta subunit
+cre:ChreCp062	atpI; ATP synthase CF0 A subunit
+cre:ChreCp001	petA; cytochrome f
+cre:ChreCp002	petD; cytochrome b6/f complex subunit IV
+cre:ChreCp008	petB; cytochrome b6
+cre:ChreCp045	petG; cytochrome b6/f complex subunit V
+cre:ChreCp068	petL; cytochrome b6/f complex subunit VI
+cre:ChreCp019	psaA; photosystem I P700 chlorophyll a apoprotein A1
+cre:ChreCp048	psaB; photosystem I P700 chlorophyll a apoprotein A2
+cre:ChreCp061	psaJ; photosystem I subunit IX
+cre:ChreCp067	psaC; photosystem I subunit VII
+cre:ChreCp004	psbK; photosystem II protein K
+cre:ChreCp021	psbA; photosystem II protein D1
+cre:ChreCp026	psbM; photosystem II protein M
+cre:ChreCp027	psbZ; photosystem II protein Z
+cre:ChreCp029	psbH; photosystem II protein H
+cre:ChreCp031	psbT; photosystem II protein T
+cre:ChreCp032	psbB; photosystem II 47 kDa protein
+cre:ChreCp040	psbE; photosystem II protein V
+cre:ChreCp043	psbF; photosystem II protein VI
+cre:ChreCp044	psbL; photosystem II protein L
+cre:ChreCp051	psbI; photosystem II protein I
+cre:ChreCp057	psbA; photosystem II protein D1
+cre:ChreCp063	psbJ; photosystem II reaction center protein J
+cre:ChreCp064	psbD; photosystem II protein D2
+cre:ChreCp066	psbC; photosystem II 44 kDa protein
+cre:ChreCp003	chlB; photochlorophyllide reductase subunit B
+cre:ChreCp009	chlL; photochlorophyllide reductase subunit L
+cre:ChreCp056	chlN; photochlorophyllide reductase subunit N
