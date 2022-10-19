@@ -25,7 +25,7 @@ read_qcc=function() {
       recur_union(ls)
     }
   }
-SBP_QCC=read.delim('Data/AbolsuteQuantUVM4STOP1STOP2.txt')
+SBP_QCC=read.delim('Data/QconCAT_David20220124/abs_abundance/AbolsuteQuantUVM4STOP1STOP2.txt')
 UVM_QCC=SBP_QCC[, c('ProteinId', 'UVM4_1', 'UVM4_2', 'UVM4_3', "Synonyms")]
 UVM_QCC=UVM_QCC[apply(!(is.na(UVM_QCC[, 2:4])), 1, any), ]
 colnames(UVM_QCC)[colnames(UVM_QCC) %in% "Synonyms"]="Synonym"
