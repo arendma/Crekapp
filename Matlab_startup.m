@@ -5,7 +5,7 @@ COBRA_PATH='~/Software/cobratoolbox'; % Path of cobratoolbox
 %add paths to matlab path
 ckadpath({COBRA_PATH, "Program/"})
 
-
+initCobraToolbox(false)
 
 function ckadpath(paths)
 cur_path=path();
