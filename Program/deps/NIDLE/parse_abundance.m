@@ -24,7 +24,7 @@ function [abundance, g_vect, report_tab]=parse_abundance(model_irrev,conditions,
 %               1)
 %       -reacind:   index of reac in the vector of all reaction in
 %                   model_irrev (size k x 1)
-%   double vect:    A matrix (:D) of n_reaction x n_conditions vector containing 1
+%   double g_vect:    A matrix (:D) of n_reaction x n_conditions vector containing 1
 %                   for each reaction, for which all nescessary enzymes are found in
 %                   abundance data in the respective condition
 %   tab report_tab: A table containing the reaction name and subsystem

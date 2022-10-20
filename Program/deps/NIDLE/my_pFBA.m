@@ -1,4 +1,4 @@
-function[V_solution_p]=pFBA(model_irrev,lb,ub,scale)
+function[V_solution_p]=my_pFBA(model_irrev,lb,ub,scale)
 n_cond=size(lb,2);
 [n_m,n_r]=size(model_irrev.S);
 

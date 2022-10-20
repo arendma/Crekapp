@@ -307,8 +307,9 @@ end
      res_EC= model_irrev.rxnECNumbers(Res_idx);
      res_lkcat= lit_kcats(Res_idx,:);
      res_Kcats= Kapp_matrix(Res_idx,:);
+     res_iszcalc=isz_calc(Res_idx);
      %export a overview table
-     res_tab=[table(res_rxns, isz_calc, res_JGIg, res_UPg, res_EC),res_lkcat, array2table(res_Kcats)];
+     res_tab=[table(res_rxns, res_iszcalc, res_JGIg, res_UPg, res_EC),res_lkcat, array2table(res_Kcats)];
      res_tab.Properties.VariableNames=[{'Rxns', 'IsozymeQP', 'JGIgeneID', 'UniprotgeneID', 'ECNumber'}, lit_kcats.Properties.VariableNames, abundance.cond'];
      writetable(res_tab, append(outf, '.tsv'), 'FileType', 'text', 'Delimiter', 'tab')
      %export gene overview table

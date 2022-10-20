@@ -1,7 +1,28 @@
-function [new]=NIDLE(model,g_vect,lb,ub,ep,scale, feasTol, OutputFlag)
+function [new]=NIDLE(model,g_vect,lb,ub,ep,scale, feasTol, Threads,  OutputFlag)
+%FUNCTION to construct the NIDLE MILP
+%INPUT:
+% struct model: The irreversible model in COBRA format
+% double g_vect:    A matrix (:D) of n_reaction x n_conditions vector containing 1
+%                   for each reaction, for which all nescessary enzymes are found in
+%                   abundance data in the respective condition
+% double lb:    A matrix n_reactions x n_conditions bearing the lower bounds
+%               of reactions
+% double ub:    Same as lb but containing upper bounds of reactions
+% double ep:    Number giving the lower limit of reaction flux to be 
+%               considered an active reaction
+% double scale: A factor to scale all reaction fluxes except the biomass
+%               flux by (here stochiometric coefficients are scaled)
+% double feasTol:  Gurobi solver feasibility tolerance
+% double threads:   Param passed to gurobi solver (default 0; 
+%                   takes the available number of virtual cores or 32 if 
+%                   more available)
+% double OutputFlag: Param passed to gurobi solver (default 0; no output)
 
-if nargin<8
-    OutputFlag=0
+if nargin<9
+    OutputFlag=0;
+    if nargin<8
+        Threads=0;
+    end
 end
 biomass_idx=find(contains(model.rxns, 'Biomass'));
 
@@ -87,6 +108,7 @@ for cond=1:size(lb,2)
     params.FeasibilityTol=feasTol;
     params.IntFeasTol=1e-3;
     params.OutputFlag=OutputFlag;
+    params.Threads=Threads
     x = gurobi(m,params);
     
     %in case of infeasibility try supplying partial solution with higher
