@@ -2,13 +2,13 @@
 
 %%%% EDIT FOR YOUR INSTALLATION %%%%%%
 COBRA_PATH='~/Software/cobratoolbox'; % Path of cobratoolbox
-RAVEN_PATH='~/Sotware/RAVEN';
+RAVEN_PATH='~/Software/RAVEN';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %add paths to matlab path
-for p={COBRA_PATH; 'Program/NIDLE', 'Program/utilities'}
-    ckadpath(p)
+for p={COBRA_PATH,'Program','Program/deps/NIDLE', 'Program/deps/utilities'}
+    ckadpath(p{:})
 end
 initCobraToolbox(false)
 run(fullfile(RAVEN_PATH, 'installation/checkInstallation.m'))
