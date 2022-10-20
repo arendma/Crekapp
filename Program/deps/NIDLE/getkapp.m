@@ -51,8 +51,8 @@ if  sum(abs(isoz_LP(testv, testE).kapp-[2;3;10]))>1e-8 || sum(abs(isoz_QP(testv,
     error('isoz_LP function does not return correct solution for soluble system')
 end
 %Generate output dir if not existing
-if ~isfolder(outf)
-    mkdir(outf)
+if ~isfolder(fileparts(outf))
+    mkdir(fileparts(outf))
 end
 %cleanup sol_flux 
 %Result for fluxes reconverted to mmol/gDW*h
