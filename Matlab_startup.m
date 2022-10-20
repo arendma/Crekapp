@@ -3,19 +3,25 @@
 COBRA_PATH='~/Software/cobratoolbox'; % Path of cobratoolbox
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %add paths to matlab path
-ckadpath({COBRA_PATH, "Program/"})
+ckadpath(COBRA_PATH)
+ckadpath('Program/', true)
 
 initCobraToolbox(false)
 
-function ckadpath(paths)
+function ckadpath(p, recursive)
+if nargs<2
+    recursive=false;
+end
 cur_path=path();
-    for i=1:length(paths)
-        if isfolder(paths{i})
-            if ~contains(cur_path, paths{i})
-                addpath(paths{i})
+        if isfolder(path)
+            if ~contains(cur_path, path)
+                if recursive
+                    addpath(genpath(path))
+                else
+                    addpath(p)
+                end
             end
         else
-            error(append(paths{i}, " is not a directory"))
+            error(append(p, " is not a directory"))
         end
-    end
 end
