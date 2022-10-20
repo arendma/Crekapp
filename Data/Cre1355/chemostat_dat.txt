@@ -1,0 +1,11 @@
+	mu[h-1]	DW[g/L]	DIC [mmol/gDW]	NH4 [mmol/gDW]	PO4 [mmol/gDW]	Acetate [mmol/gDW]
+Autotrophic_Rep1	0.033	0.115	1.289	0.569	0.032	NA
+Autotrophic_Rep2	0.033	0.080	NA	0.734	0.024	NA
+Autotrophic_Rep3	0.042	0.069	1.752	0.514	0.025	NA
+Autotrophic_Rep4	0.042	0.060	1.775	0.486	0.026	NA
+Mixotrophic_Rep1	0.082	0.048	NA	3.035	0.099	1.364
+Mixotrophic_Rep2	0.082	0.078	NA	0.748	0.078	2.261
+Mixotrophic_Rep3	0.061	0.100	NA	1.259	0.047	1.059
+Mixotrophic_Rep4	0.061	0.166	NA	1.071	0.041	1.234
+Heterotrophic_Rep1	0.024	0.137	NA	0.439	0.010	1.579
+Heterotrophic_Rep2	0.028	0.137	NA	0.454	0.012	1.599
