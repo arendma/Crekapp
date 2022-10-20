@@ -19,7 +19,7 @@ end
 %import biomart information obtained from JGI
 %Query:
 %https://phytozome-next.jgi.doe.gov/biomart/martview?VIRTUALSCHEMANAME=zome_mart&ATTRIBUTES=phytozome.default.features.gene_name1|phytozome.default.features.uniprot_id|phytozome.default.features.peptide_name|phytozome.default.features.enzyme_id&FILTERS=phytozome.default.filters.organism_id."281"&VISIBLEPANEL=resultspanel
-mart_inf=readtable('../Data/mart_Cre_Uniprot.txt');
+mart_inf=readtable('Data/mart_Cre_Uniprot.txt');
 %
 %To use it as a conversion from transcript and to Uniprot remove rows which
 %are duplicates except the EC value
@@ -31,7 +31,7 @@ mart_inf(cellfun(@isempty, mart_inf.UniProtID),:)=[];
 JGI2UP=containers.Map(mart_inf.PeptideName, mart_inf.UniProtID);
 
 %import Prot information database constructed by GECKO 06-2022
-load('../Data/GECKOCre_ProtDatabase.mat')
+load('Data/GECKOCre_ProtDatabase.mat')
 up_ID=cell(size(JGI_ID));
 for i=1:length(JGI_ID)
     new_gn='';

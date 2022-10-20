@@ -38,7 +38,7 @@ models=cell(length(model_file.file),1);
 for i=1:length(model_file.file)
     models{i}=readCbModel(model_file.file{i});
     if i==1
-        models{i}=addEC_Cre1355(models{i}, '../Data/Cre1355/tpj13059-sup-0011-tables5.xlsx');
+        models{i}=addEC_Cre1355(models{i}, 'Data/Cre1355/tpj13059-sup-0011-tables5.xlsx');
         %Fix problematic GPR rules
         models{i}=resolve_problemgrR(models{i});
     end

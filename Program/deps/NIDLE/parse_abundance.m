@@ -30,7 +30,7 @@ function [abundance, g_vect, report_tab]=parse_abundance(model_irrev,conditions,
 %   tab report_tab: A table containing the reaction name and subsystem
 %                   together with the vect matrix
 %Calculate cellular dw assuming constant cell density
-meta_2022=readtable('../Data/QconCAT_David20220124/QconCat_UPS.xlsx');
+meta_2022=readtable('Data/QconCAT_David20220124/QconCat_UPS.xlsx');
 meta_2022=meta_2022(:, {'Characteristics_environmentalCondition_','Characteristics_cellVolume_'});
 
 cond_map=containers.Map({'Control Type', 'dark', 'high cell density','no shaking','sodium chloride exposure', 'warm/hot temperature exposure'} ,...
