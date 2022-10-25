@@ -21,20 +21,6 @@ if nargin<2
     assignkcat=[];
 end
 
-
-if isfolder('~/Software/cobratoolbox') && isfolder('~/Software/RAVEN')
-    addpath '~/Software/cobratoolbox'
-    initCobraToolbox(false)
-    run('~/Software/RAVEN/installation/checkInstallation.m')
-elseif exist('C:/cobratoolbox/', 'dir') && isfolder('C:/Software/RAVEN')
-    addpath 'C:/cobratoolbox/'
-    initCobraToolbox(false)
-    run('C:/Software/RAVEN/installation/checkInstallation.m')
-else
-    error('Can not find COBRA path and/or RAVEN path')
-end
-
-
 home=pwd();
 %import protein biomass fraction from Boyle and Morgan switch between ptot
 %by uncommenting/commenting
