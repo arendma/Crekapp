@@ -53,6 +53,7 @@ if ~isempty(genes)
     MW_ave  = mean(cell2mat(swissprot(:,5)));
     concs   = zeros(size(genes));
     counter = false(size(genes));
+    MW_det = zeros(size(genes));
     for i = 1:length(genes)
         MW = MW_ave;
         %Find gene in swissprot database:
@@ -60,7 +61,7 @@ if ~isempty(genes)
             %Compare with swiss prot gene name and uniprot ID
             if sum(strcmp(swissprot{j,3},genes{i})) > 0 || sum(strcmp(swissprot{j,1},genes{i})) > 0
                 MW = swissprot{j,5};	%g/mol
-                
+                MW_det(i)=1; %Array indicating if entry was found in database - only for debug
                 %Check if uniprot is in model:
                 if sum(strcmp(enzymes,swissprot{j,1})) > 0
                     counter(i) = true;
