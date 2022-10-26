@@ -22,16 +22,14 @@ if nargin<2
 end
 
 home=pwd();
+%Adapt relative_proteomics
+copyfile("Data/QconCAT_David20220124/abs_abundance/muns_relative_proteomics.txt", "Program\deps\GECKOcre\databases\relative_proteomics.txt")
 %import protein biomass fraction from Boyle and Morgan switch between ptot
 %by uncommenting/commenting
 GKOinf={'auto', 0.261, {'EX_co2_e', 'EX_nh4_e', 'EX_pi_e'}, 
     'mixo', 0.303, {'EX_co2_e', 'EX_ac_e','EX_nh4_e', 'EX_pi_e' }
     'hetero', 0.222, {'EX_ac_e', 'EX_nh4_e', 'EX_pi_e'}};
 GKOinf=cell2table(GKOinf, 'VariableNames', {'name', 'Ptot', 'C_upt'});
-GKOinf.rppath={'Data/QconCAT_David20220124/abs_abundance/mixo_relative_proteomics.txt',
-    'Data/QconCat_David20220124/abs_abundance/mixo_relative_proteomics.txt', 
-    'Data/QconCAT_David20220124/abs_abundance/hetero_relative_proteomics.txt'};
-
 cstat_dat=readtable('Data/Cre1355/chemostat_dat.txt', 'TreatAsEmpty', {'NA'});
 %add culture conditions id
 cstat_dat.cond_id={'auto', 'auto', 'auto', 'auto', 'mixo', 'mixo', 'mixo', 'mixo', 'hetero', 'hetero'}';
@@ -64,8 +62,6 @@ for i=idx
     parameters.Ptot=GKOinf.Ptot(ismember(GKOinf.name, cstat_dat.cond_id(i)));
     parameters.gR_exp=cstat_dat.mu_h_1_(i);
     save('../databases/parameters.mat', 'parameters')
-    %adapt relative proteomics file
-    copyfile(GKOinf.rppath{ismember(GKOinf.name, cstat_dat.cond_id(i))}, '../databases/relative_proteomics.txt');
     enhanceGEM(base_mod, 'COBRA', ['geCre1355' cstat_dat.Var1{i}], 'Cre1355', assignkcat)
     parameters=sav_parameters;
     save('../databases/parameters.mat', 'parameters')
