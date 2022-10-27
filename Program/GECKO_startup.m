@@ -1,6 +1,6 @@
 %setup environment for gecko remove comments from code lines for de-novo
 %run
-function GECKO_startup(idx, assignkcat)
+function GECKO_startup(idx, assignkcat, logname)
 %Function to create GECKO models form IMAM et al data and boyle & Morgen
 %Ptot measures
 %INPUT:
@@ -11,6 +11,8 @@ function GECKO_startup(idx, assignkcat)
 %                       file in GECKOdir/models/ from which matched kcats 
 %                       should be read, if empty kcats are matched to 
 %                       reaction denvoe (runtime ~4h)
+% - char logname:	a character vector giving the prefix of the log file
+%			to which log file will be saved
 if nargin<1
     idx=1:5;
 elseif length(idx)==1
@@ -21,9 +23,13 @@ if nargin<2
     assignkcat=[];
 end
 
+if nargin<3
+	logname='';
+end
+
 home=pwd();
 %Adapt relative_proteomics
-copyfile("Data/QconCAT_David20220124/abs_abundance/muns_relative_proteomics.txt", "Program\deps\GECKOcre\databases\relative_proteomics.txt")
+copyfile("Data/QconCAT_David20220124/abs_abundance/muns_relative_proteomics.txt", "Program/deps/GECKOcre/databases/relative_proteomics.txt")
 %import protein biomass fraction from Boyle and Morgan switch between ptot
 %by uncommenting/commenting
 GKOinf={'auto', 0.261, {'EX_co2_e', 'EX_nh4_e', 'EX_pi_e'}, 
@@ -46,7 +52,7 @@ Cr55_m=readCbModel('Data/Cre1355/iCre1355_mixo_up.xml');
 Cr55_h=readCbModel('Data/Cre1355/iCre1355_hetero_up.xml');
 models.mods={Cr55_a, Cr55_m, Cr55_h};
 models.name={'auto', 'mixo', 'hetero'};
-diary([date '.log'])
+diary([logname date '.log'])
 for i=idx
     base_mod=models.mods{ismember(models.name, cstat_dat.cond_id(i))}; 
     %adapt model for batch growth (set respective carbon sources to 1000)
