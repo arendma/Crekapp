@@ -5,6 +5,7 @@ This repository contains code to produce the results presented in the publicatio
  - [R](https://www.r-project.org/) (tested on version 4.2.1)
  - [matlab](https://www.mathworks.com/help/install/install-products.html) (tested on version 2020b & 2022b)
  - [COBRA](https://opencobra.github.io/cobratoolbox/stable/installation.html) toolbox (tested on 2022 release)
+ - [RAVEN] (https://github.com/SysBioChalmers/RAVEN) (tested on version 2.5.0)
  - [GECKO](https://github.com/SysBioChalmers/GECKO) toolbox (tested on version 2.0.2)
  - [Gurobi solver](https://www.gurobi.com/documentation/9.5/quickstart_mac/software_installation_guid.html) (tested on version 9.5.2)
 
