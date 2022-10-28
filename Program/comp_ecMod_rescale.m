@@ -65,11 +65,9 @@ abun_dat=readtable('Data/QconCAT_David20220124/abs_abundance/med_abun_all.tsv', 
 %remove non control conditions
 abun_dat(:, {'highcell', 'highsalt', 'hightemp', 'noshaking'})=[];
 %adapt Uniprot names
-cd Utilities/
 abun_dat.UPId=JGItoUP(abun_dat.ProteinId);
 abun_dat(cellfun(@isempty, abun_dat.UPId), :)=[];
 abun_dat=abun_dat(:, [1, size(abun_dat,2), 2:(size(abun_dat,2)-1)]);
-cd ../
 %sum duplicated entries up and remove duplicates
 rem_idx=[];
 dups=duplicates(abun_dat.UPId);
