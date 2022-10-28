@@ -17,8 +17,14 @@ Edit the `Matlab_startup.m` file to add the paths of the installed dependencies.
 ## Reproducing results (on linux machine)
 1. Set this repository as working directory 
 
-2. Run `Program\fit_chemostatdat.r` to obtain a model for maximum acetate uptake.
+2. In R run `Program/fit_chemostatdat.r` to obtain a model for maximum acetate uptake.
 
-3. Run `Program\Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics.
+3. In R run `Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics.
 
-4. 
+4. In Matlab run `Matlab_startup` to set path for depenencies (edit as mentioned above)
+
+5. In Matlab run `GECKO_startup()` to generate pcGEMs from autotrophic, mixotrohpic and heterotrophic chlamydomonas models. 
+
+6. In Matlab run `comp_ecModel_rescale` to generate metabolic model predictions from the GEM and pcGEMs.
+
+7. In R run `Program/plotprogrep_202207.r` to generate figures and statistics presented in the paper. 
