@@ -1,6 +1,6 @@
 #Plot for second Progress report
 library(ggplot2)
-library(xlsx)
+#library(xlsx)
 
 cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#A132F0", "#0072B2", "#D55E00", "#CC79A7")
 cnames=c("control", "highcell","highsalt", "hightemp", "noshaking", "UVM4", "Stop1", "Stop2", "dark")
@@ -10,16 +10,16 @@ plot_nidle_kcat= function(cnames, clabs, same_set) {
   #Input:
   # - logical same_set: If true than in the scatter plot of nidlekapps and kcats only reactions with 
   #                     kcat values for pro & eukaryots are taken into account
-  source('expandcolv3.r', local=TRUE)
+  source('Program/deps/utilities/expandcolv3.r', local=TRUE)
   require(ggfortify)
-  resdir='Results/Hammel_NIDLE/2022/'
+  resdir='Results/NIDLE/'
   if (!(dir.exists(resdir))) {
     dir.create(resdir)
   }
-  kapp_ndat=read.delim(file.path(resdir,'Hammel_kcat_n.tsv'), na.strings = 'NaN')
+  kapp_ndat=read.delim(file.path(resdir,'kcat_n.tsv'), na.strings = 'NaN')
   #check if all cnames are contained in the NIDLE data
   if (!all(cnames %in% colnames(kapp_ndat))) {
-    stop("Not all cnames are contained as column names in Hammel_kcat_n.tsv")
+    stop("Not all cnames are contained as column names in kcat_n.tsv")
   }
   colnames(kapp_ndat)[colnames(kapp_ndat) %in% 'proc_Kcats']='prok_Kcats'
   ##plot a barplot giving the number of maximum kcats per condition
@@ -159,7 +159,7 @@ plot_nidle_kcat= function(cnames, clabs, same_set) {
      scale_color_discrete(labels = c(clabs, 'maxKapp'))
   ggsave(file.path(resdir, 'nonsparce_pca.pdf'), bp1, width = 7, height=5, useDingbats=FALSE)
   #plot PCA plot of log transformed fluxes for nonspars nonzero entries
-  nflux=read.delim(file.path(resdir,'Hammel_kcat_n_flux.tsv'), na.strings = 'NaN')
+  nflux=read.delim(file.path(resdir,'kcat_n_flux.tsv'), na.strings = 'NaN')
   nflux_nons=nflux[apply(is.na(nflux[,colnames(nflux) %in% cnames])|nflux[,colnames(nflux) %in% cnames]==0, 1, sum)==0,]
   nflux_nons[,colnames(nflux) %in% cnames]=log10(nflux_nons[,colnames(nflux) %in% cnames])
   #only select data from subsystems with min 3 entries for NIDLE kappsa
@@ -193,14 +193,14 @@ plot_nidle_kcat(cnames, clabs, TRUE)
 plotkcatcomp = function(cnames) {
   require(VennDiagram)
   ##Import nidel Kcats
-  kapp_ndat=read.delim('Results/Hammel_NIDLE/2022/Hammel_kcat_n.tsv', na.strings = 'NaN')
-  kapp_pdat=read.delim('Results/Hammel_pFBA//Hammel_kcat_p.tsv', na.strings = 'NaN')
+  kapp_ndat=read.delim('Results/NIDLE/kcat_n.tsv', na.strings = 'NaN')
+  kapp_pdat=read.delim('Results/pFBA//kcat_p.tsv', na.strings = 'NaN')
   #check if all cnames are contained in the NIDLE data
   if (!all(cnames %in% colnames(kapp_ndat))) {
-    stop("Not all cnames are contained as column names in Hammel_kcat_n.tsv")
+    stop("Not all cnames are contained as column names in kcat_n.tsv")
   }
   if (!all(cnames %in% colnames(kapp_pdat))) {
-    stop("Not all cnames are contained as column names in Hammel_kcat_p.tsv")
+    stop("Not all cnames are contained as column names in kcat_p.tsv")
   }
   colnames(kapp_ndat)[colnames(kapp_ndat) %in% 'proc_Kcats']='prok_Kcats'
   
@@ -218,13 +218,13 @@ plotkcatcomp = function(cnames) {
     scale_x_log10() + scale_y_log10() + ylab('max(kapp) from pFBA') + xlab('max(kapp) from NIDLE') +
     annotate(geom='text', x=min(np_comptab[!(is.na(np_comptab$NIDLE))&!(is.na(np_comptab$pFBA)),"NIDLE"])+3, y=max(np_comptab[!(is.na(np_comptab$NIDLE))&!(is.na(np_comptab$pFBA)),"pFBA"])-1, size=8,  label=paste('\u03c1 = ', round(pvnrho, 2))) +
     geom_abline(intercept = 0, slope = 1) + theme_bw() + theme(text=element_text(size=25))
-  ggsave("Results/Hammel_NIDLE/2022/kcat_pFBAvn.pdf",pvn, width=7, height=7, device=grDevices::cairo_pdf)
+  ggsave("Results/NIDLE/kcat_pFBAvn.pdf",pvn, width=7, height=7, device=grDevices::cairo_pdf)
   #plot venn diagram
-  venn.diagram(list(NIDLE=kapp_ndat$Rxns, pFBA=kapp_pdat$Rxns), filename="Results/Hammel_NIDLE/2022/kcat_pFBAvn_venn.png", imagetype = "png")
+  venn.diagram(list(NIDLE=kapp_ndat$Rxns, pFBA=kapp_pdat$Rxns), filename="Results/NIDLE/kcat_pFBAvn_venn.png", imagetype = "png")
   #Import sMOMENT kcats - these is one forward and one reverse value for each raction with EC number independent of model reaction reversibility
   #smomkcat=import_smomkcat('Results/CresMOMENT/ecCre1355a_reactions_kcat_mapping_combined.tab')
   #Import GECKO kcats - these is one value for each reaction in the irreversible model which is linked to a GPR rule
-  GECKOkcat=read.csv('Results/CreGECKO/geCre1355Autotrophic_Rep1/geCre1355Autotrophic_Rep1kcats.tab')
+  GECKOkcat=read.csv('Program/deps/GECKOcre/models/geCre1355Autotrophic_Rep1/geCre1355Autotrophic_Rep1_kcats.tab')
   
   #match reaction specific kcats
   comp_mat=matrix(nrow=nrow(GECKOkcat), ncol=3)
@@ -288,14 +288,10 @@ plotkcatcomp = function(cnames) {
       ggsave(paste('Results/eccomp/kcat_gvs_', mat_labels[m], '.pdf',collapse =''), p, device=grDevices::cairo_pdf)
     }
   }
-  #extract infos on specific enzymes
-  info_tab=cbind(GECKOkcat, comp_mat)
-  etc_id=read.delim("Data/Electron_tchain_IDs.txt", header=FALSE)
-  print(merge(etc_id, info_tab, by.x="V1", by.y="rxns")[, c("V1", "V2", "GECKO", "NIDLE")])
 }
-plotkcatcomp()
+plotkcatcomp(cnames)
 plot_ecmodcomp=function(cnames) {
-  source('expandcolv3.r', local=TRUE)
+  source('Program/deps/utilities/expandcolv3.r', local=TRUE)
   predgrowth=read.csv('Results/eccomp/chemostat_comp.txt')
   plot_predgrowth=expandcol(predgrowth, 2:ncol(predgrowth))
   plot_predgrowth$oldcols=gsub('_.*$', '', plot_predgrowth$oldcols)
@@ -330,7 +326,7 @@ plot_ecmodcomp(cnames)
 kcat_ana=function() {
   #code to extract information on the coverage of photosynthetic organisms in BRENDA an SABIO-RK database
   #Import database
-  bs_db=read.delim("kcats/kcats-full-lineages.tsv")
+  bs_db=read.delim("Data/kcats/kcats-full-lineages.tsv")
   #get yeast ecnumbers
   n_cere=length(unique(bs_db$ec_number[grep("cerevisiae", bs_db$lineage)]))
   #get chlamy entries

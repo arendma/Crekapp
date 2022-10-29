@@ -23,7 +23,7 @@ Edit the `Matlab_startup.m` file to add the paths of the installed dependencies.
 
 4. In Matlab run `Matlab_startup` to set path for depenencies (edit as mentioned above)
 
-5. In Matlab run `GECKO_startup()` to generate pcGEMs from autotrophic, mixotrohpic and heterotrophic chlamydomonas models. 
+5. In Matlab run `GECKO_startup()` to generate pcGEMs from autotrophic, mixotrohpic and heterotrophic chlamydomonas models. This will create a log file with GECKO output in the working directory.
 
 6. In Matlab run `comp_ecModel_rescale` to generate metabolic model predictions from the GEM and pcGEMs.
 
