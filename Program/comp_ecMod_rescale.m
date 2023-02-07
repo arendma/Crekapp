@@ -58,6 +58,9 @@ for i=1:size(res,1)
 end
 res=[cstat_dat.Var1(1:2:10), array2table(res, 'VariableNames', {'exp_mu', 'FBA', 'GKOraw', 'GKOadp', 'NDLraw', 'NDLadp'})];
 writetable(res, 'Results/eccomp/chemostat_comp.txt')
+RMSE_FBA=sqrt(mean((res.exp_mu-res.FBA).^2))
+RMSE_NDLadp=sqrt(mean((res.exp_mu-res.NDLadp).^2))
+disp(['RMSE FBA is ', num2str(RMSE_FBA), '. RMSE NIDLE adapted is ' num2str(RMSE_NDLadp)])
 
 %compare predicted enzyme usage
 %import enzyme abundance 

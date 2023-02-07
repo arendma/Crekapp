@@ -1,4 +1,4 @@
-#Plot for second Progress report
+#Plot manuscript figures
 library(ggplot2)
 #library(xlsx)
 
@@ -312,14 +312,14 @@ plot_ecmodcomp=function(cnames) {
   colnames(plot_spearprot)=c('Condition', 'sp_cor', 'Model')
   shps2=c(16,16,17,17)
   names(shps2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
-  cols2=c(cbPalette[3],  cbPalette[4], cbPalette[3],  cbPalette[4])
+  cols2=c('seagreen',  'skyblue4', 'seagreen2',  'lightskyblue')
   names(cols2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
-  plot2=ggplot(plot_spearprot, aes(x=Condition ,y=sp_cor, color=Model, shape=Model)) + geom_jitter(size=5,alpha=0.7, height=0, width=0.1) +
-    theme_bw() + theme(text=element_text(size=25), axis.text.x=element_text(angle=60, hjust=1)) + 
-    scale_color_manual(values=cols2, labels=c('GECKO adapted' , 'GECKO raw', 'GECKO adapted + NIDLE', 'GECKO raw + NIDLE')) + 
-    scale_shape_manual(values=shps2, labels=c('GECKO adapted' , 'GECKO raw', 'GECKO adapted + NIDLE', 'GECKO raw + NIDLE')) +
-    ylab('Spearman correlation')
-  ggsave('Results/eccomp/abunvse/spearman.pdf', plot2, width=10, height=6, useDingbats=FALSE)
+  plot2=ggplot(plot_spearprot, aes(x=sp_cor ,y=Condition, color=Model, shape=Model)) + geom_jitter(size=5,alpha=0.7, height=0.1, width=0) +
+    theme_bw() + theme(text=element_text(size=25), legend.position="bottom") + 
+    scale_color_manual(values=cols2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) + 
+    scale_shape_manual(values=shps2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) +
+    xlab('Spearman correlation')
+  ggsave('Results/eccomp/abunvse/spearman.pdf', plot2, width=13, height=4, useDingbats=FALSE)
 }
 plot_ecmodcomp(cnames)
 
@@ -330,7 +330,7 @@ kcat_ana=function() {
   #get yeast ecnumbers
   n_cere=length(unique(bs_db$ec_number[grep("cerevisiae", bs_db$lineage)]))
   #get chlamy entries
-  n_chlamydomonas=length(bs_db$ec_number[grep("Chlamydomonas", bs_db$lineage)])
+  n_chlamydomonas=length(unique(bs_db$ec_number[grep("Chlamydomonas", bs_db$lineage)]))
   print(paste("Number of Chlamydomonas entries:", n_chlamydomonas))
   print(paste("Relative amount of yeast entries compared to chlamy: ", signif(n_cere/n_chlamydomonas,2)))
   #get fungi vs plant number of kcats
