@@ -1,5 +1,5 @@
 #setup script for phsophoprot
-packs = c("ggplot2", "xlsx", "gridExtra", "taxize", "ggfortify", "VennDiagram")
+packs = c("ggplot2", "xlsx", "gridExtra", "ggfortify", "VennDiagram")
 bcpacks = c()
 
 for (pack in packs) {
