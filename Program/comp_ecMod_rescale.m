@@ -6,6 +6,9 @@ changeCobraSolverParams('LP','feasTol', 1e-9)
 if ~isfolder('Results/eccomp/abunvse')
     mkdir('Results/eccomp/abunvse')
 end
+if ~isfolder('Results/NIDLEecmods/')
+    mkdir('Results/NIDLEecmods/')
+end
 
 %import protein biomass fraction from Boyle and Morgan 
 Ptot={'auto', 0.261
@@ -44,7 +47,8 @@ for i=1:size(gems,1)
     gems{i,5}=readGKOmodel(append('Program/deps/GECKOcre/models/geCre1355', gems{i,2}, '/adprawgeCre1355',gems{i,2}, '_batch.mat'));
     gems{i,6}=create_NIDLEmod(gems{i,4}, 'prot_', gems{i,1}, {'control', 'highcell', 'highsalt', 'hightemp', 'noshaking', 'UVM4', 'Stop1', 'Stop2', 'dark'}, {}, false);
     gems{i,7}=create_NIDLEmod(gems{i,5}, 'prot_', gems{i,1}, {'control', 'highcell', 'highsalt', 'hightemp', 'noshaking', 'UVM4', 'Stop1', 'Stop2', 'dark'}, {}, false);
-    
+    %Export the adapted GECKO model with NIDLE kcats for easier access
+    writeCbModel(gems{i,7}, ['Results/NIDLEecmods/NDLadpraw_', gems{i,2} '.xml'])
 end
 
 %predict growth
