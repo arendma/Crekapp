@@ -10,15 +10,16 @@ This repository contains code to produce the results presented in the publicatio
  - [Gurobi solver](https://www.gurobi.com/documentation/9.5/quickstart_mac/software_installation_guid.html) (tested on version 9.5.2)
 
 ## Setup (~ 30min)
-After making sure all dependencies are installed and properly setup (see links above). Switch working directory to this git repository and run `Rsetup.r` to install nescessary R packages.
+After making sure all dependencies are installed and properly setup (see links above). Switch working directory to this git repository and open an R console and from within run
+`source("Rsetup.r")` to install nescessary R packages.
 Edit the `Matlab_startup.m` file to add the paths of the installed dependencies.
 
-## Reproducing results (on linux machine)
+## Reproducing results (on linux machine - scripts produce verbose output to comman line no reason to worry)
 1. Set this repository as working directory 
 
-2. In R run `Program/fit_chemostatdat.r` to obtain a model for maximum acetate uptake. (~2-3s on Ryzen5 4000 16 GB RAM)
+2. In R run `Program/fit_chemostatdat.r` to obtain a model for maximum acetate uptake. (On windows it is sometimes only possible to source the scripts from within the R console using `source("Program/fit_chemostat.r")`)(~2-3s on Ryzen5 4000 16 GB RAM)
 
-3. In R run `Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics. (~90s on Ryzen5 4000 16 GB RAM)
+3. In R run `Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics. (Also here on windows alternatively you can use `source("Program/QCC_smy_main2.r")`)(~90s on Ryzen5 4000 16 GB RAM)
 
 4. In Matlab run `Matlab_startup` to set path for depenencies (edit as mentioned above) (1s on Ryzen5 4000 16 GB RAM)
 
