@@ -62,7 +62,7 @@ for i=idx
     base_mod=changeRxnBounds(base_mod, r, -1000, 'l');
     disp('New Flux bounds')
     printFluxBounds(base_mod, r')
-    cd Program/deps/GECKOcre/geckomat
+    cd(fullfile(pwd, 'Program', 'deps', 'GECKOcre', 'geckomat'))
     sav_parameters=getModelParameters();
     parameters=sav_parameters;
     parameters.Ptot=GKOinf.Ptot(ismember(GKOinf.name, cstat_dat.cond_id(i)));
