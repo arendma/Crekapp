@@ -6,13 +6,32 @@ source("Program/deps/plotting/plotexternalcomp.r")
 
 cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#A132F0", "#0072B2", "#D55E00", "#CC79A7")
 cnames=c("control", "highcell","highsalt", "hightemp", "noshaking", "UVM4", "Stop1", "Stop2", "dark")
-clabs=c('Control CC1690', 'High Cell CC1690', 'High Salt CC1690', 'High Temp CC1690', 'No Shaking CC1690','Control UVM4', 'SDP OE1 UVM4', 'SDP OE2 UVM4',  'Dark CC1690')
+clabs=c('control CC1690', 'high cell CC1690', 'high salt CC1690', 'high temp CC1690', 'no shaking CC1690','control UVM4', 'SDP OE1 UVM4', 'SDP OE2 UVM4',  'dark CC1690')
 names(clabs)=cnames
 
 subsys_kapp_ndat=plot_nidle_kapp(cnames, clabs, TRUE) 
 
 plotexternalcomp(cnames, subsys_kapp_ndat) 
 
+plotprotmw = function(cnames, clabs) {
+  #Function to plot the MW differences between conditions:
+  #INPUT:
+  #- char cnames:  character vector with column names of conditions in NIDLE output
+  #- char clabs: named character vector giving labels for conditions, where the names are cnames
+  prot_dat=read.delim("Data/QconCAT_David20220124/abs_abundance/med_abun_all_MW.tsv")
+  #Import Cre1355 GPR matrix (the set of genes in Cre1355 is a subset of CreMora)
+  Cre1355gxn=as.matrix(read.delim('Data/Cre1355/Cre1355_transcripts.txt', row.names = 1))
+  #get proteins included in the model (here a single match in gene names is ok)
+  cre_idx=rowSums(sapply(colnames(Cre1355gxn), grepl, x=prot_dat$ProteinId, fixed=TRUE))>0
+  mass_mat=prot_dat[,cnames]*prot_dat$MW #atomol/cell*g/mol=atog/cell
+  sum_stat=data.frame(sample=cnames, tot_ag=colSums(mass_mat, na.rm = TRUE), cre_ag=colSums(mass_mat[cre_idx,], na.rm = TRUE))
+  plot1=ggplot(data=sum_stat, aes(x=sample, y=tot_ag)) + geom_bar(stat="identity", alpha=0.4) +labs(y='Total Protein content [atog/cell]') +
+    geom_bar(aes(y=cre_ag), stat="identity", fill='lightpink3') +  scale_x_discrete(labels = clabs) +
+    theme_bw(base_size=14) + theme(axis.text.x = element_text(angle=50, hjust = 1), text=element_text(size=20))  
+  ggsave('Results/QconCat20220124/tot_agprot.pdf', plot1, useDingbats=FALSE)
+  write.table(sum_stat, 'Results/QconCat20220124/tot_agprot.tsv', row.names=FALSE, sep="\t")
+}
+plotprotmw(cnames,clabs)
 plotvdis = function(cnames, resdir) {
   #Function to plot the comulative distribution of flux values for the different conditions
   #- char cnames:  character vector with column names of conditions in NIDLE output
@@ -36,8 +55,9 @@ plotvdis = function(cnames, resdir) {
     plotdat=expandcol(plotdat, which(colnames(plotdat) %in% cnames))
     p1=ggplot(plotdat, aes(x=rancont, y=x1, color=x2)) + geom_line() + theme_bw() + 
       scale_color_manual(values = colorval, labels=clabs, name="Conditions") +theme(text=element_text(size=25), axis.text.x = element_blank()) + 
-      scale_y_log10() + xlab("Reactions") + ylab("Cumulative flux sum") # + xlab(expression(mmol~gDW{-1}h{-1}))
+      scale_y_log10() + xlab("Reactions") + ylab("Cumulative flux sum") # + xlab(expression(mmol~gDW{-1"}h{-1}))
     ggsave(file.path(resdir, "cumfluxdist.pdf"), p1)
+    write.table(plotdat, file.path(resdir, "cumfluxdist.tsv"), row.names =FALSE, sep="\t")
   }
   plot_cumsum(fluxdat, resdir, cnames)
  
@@ -59,7 +79,7 @@ plotvdis = function(cnames, resdir) {
 plotvdis(cnames, "Results/NIDLE")
 
 
-plot_ecmodcomp=function(cnames) {
+plot_ecmodcomp=function() {
   source('Program/deps/utilities/expandcolv3.r', local=TRUE)
   predgrowth=read.csv('Results/eccomp/chemostat_comp.txt')
   plot_predgrowth=expandcol(predgrowth, 2:ncol(predgrowth))
@@ -75,22 +95,34 @@ plot_ecmodcomp=function(cnames) {
     scale_y_log10() + ylab('Growth rate') +  theme(text=element_text(size=25), axis.text.x=element_text(angle=60, hjust=1), legend.position="bottom") + 
     coord_flip()
   ggsave('Results/eccomp/chemostat_comp.pdf', plot1, width=13, height=6, useDingbats=FALSE)
-  spearprot=read.delim('Results/eccomp/abunvse/spearman.tsv')
-  spearprot$Row=c('Control CC1690', 'Dark CC1690','UVM4', 'SDP OE1 UVM4', 'SDP OE2 UVM4')
-  plot_spearprot=expandcol(spearprot, 2:ncol(spearprot))
-  colnames(plot_spearprot)=c('Condition', 'sp_cor', 'Model')
-  shps2=c(16,16,17,17)
-  names(shps2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
-  cols2=c('seagreen',  'skyblue4', 'seagreen2',  'lightskyblue')
-  names(cols2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
-  plot2=ggplot(plot_spearprot, aes(x=sp_cor ,y=Condition, color=Model, shape=Model)) + geom_jitter(size=5,alpha=0.7, height=0.1, width=0) +
-    theme_bw() + theme(text=element_text(size=25), legend.position="bottom") + 
-    scale_color_manual(values=cols2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) + 
-    scale_shape_manual(values=shps2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) +
-    xlab('Spearman correlation')
-  ggsave('Results/eccomp/abunvse/spearman.pdf', plot2, width=13, height=4, useDingbats=FALSE)
+  
+  prot_predperf = function(perffile, xlab) {
+    #Function to plot a dotplot of different perfomance metrics for the the different ecModels
+    #INPUT:
+    # - char perffile:  character vector giving the file path to a performane metric file
+    #                   as produced by comp_ecMod_rescale. (Colnames have to be )
+    #                   c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')  spearprot=read.delim(perffile)
+    # - char xlab:  character vector giving the label for the x axis indicating the plotted performance  mearus
+    
+    spearprot=read.delim(perffile)
+    spearprot$Row=c('control CC1690', 'dark CC1690','control UVM4', 'SDP OE1 UVM4', 'SDP OE2 UVM4')
+    plot_spearprot=expandcol(spearprot, 2:ncol(spearprot))
+    colnames(plot_spearprot)=c('Condition', 'sp_cor', 'Model')
+    shps2=c(16,16,17,17)
+    names(shps2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
+    cols2=c('seagreen',  'skyblue4', 'seagreen2',  'lightskyblue')
+    names(cols2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
+    plot2=ggplot(plot_spearprot, aes(x=sp_cor ,y=Condition, color=Model, shape=Model)) + geom_jitter(size=5,alpha=0.7, height=0.1, width=0) +
+      theme_bw() + theme(text=element_text(size=25), legend.position="bottom") + 
+      scale_color_manual(values=cols2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) + 
+      scale_shape_manual(values=shps2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) +
+      xlab(xlab)
+    ggsave(gsub("tsv$", "pdf", perffile), plot2, width=13, height=4, useDingbats=FALSE)
+  }
+  prot_predperf("Results/eccomp/abunvse/spearman.tsv", "Spearman correlation")
+  prot_predperf("Results/eccomp/abunvse/RMSE.tsv", "RMSE")
 }
-plot_ecmodcomp(cnames)
+plot_ecmodcomp()
 
 kcat_ana=function() {
   #code to extract information on the coverage of photosynthetic organisms in BRENDA an SABIO-RK database

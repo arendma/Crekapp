@@ -69,10 +69,47 @@ disp(['RMSE FBA is ', num2str(RMSE_FBA), '. RMSE NIDLE adapted is ' num2str(RMSE
 %compare predicted enzyme usage
 %import enzyme abundance 
 abun_dat=readtable('Data/QconCAT_David20220124/abs_abundance/med_abun_all.tsv', 'FileType', 'text');
-%remove non control conditions
-abun_dat(:, {'highcell', 'highsalt', 'hightemp', 'noshaking'})=[];
 %adapt Uniprot names
 abun_dat.UPId=JGItoUP(abun_dat.ProteinId);
+%%EXPORT A TABLE WITH MASS WEIGHT INFO
+%Load swissprot data:
+swissprot = load('Program/deps/GECKOcre/databases/ProtDatabase.mat');
+swissprot = swissprot.swissprot;
+for i = 1:length(swissprot)
+    swissprot{i,3} = strsplit(swissprot{i,3},' ');
+end
+MW=nan(size(abun_dat, 1),1);
+MW_det=zeros(size(abun_dat,1),1);
+MW_ave  = mean(cell2mat(swissprot(:,5)));
+for i = 1:length(abun_dat.UPId)
+        MW(i) = MW_ave;
+        %Find gene in swissprot database:
+        %Check uniprot IDS
+        if sum(strcmp(swissprot(:,1), abun_dat.UPId{i}))==1
+            MW(i) = swissprot{strcmp(swissprot(:,1), abun_dat.UPId{i}),5};
+            MW_det(i)=1;
+        elseif sum(strcmp(swissprot(:,1), abun_dat.UPId{i})) >1
+            error(['more than 1 matching entry for uniprot entry ' abun_dat.UPId{i} 'detected. Check swissprot data for duplicates.'])
+        else
+            %CHeck aliases
+            for j = 1:length(swissprot)
+                %Compare with swiss prot gene name and uniprot ID
+                if sum(strcmp(swissprot{j,3},abun_dat.UPId{i})) > 0
+                    MW(i) = swissprot{j,5};	%g/mol
+                    MW_det(i)=1; %Array indicating if entry was found in database - only for debug
+                end
+            end
+        end
+        if rem(i,100) == 0 || i == length(abun_dat.UPId)
+            fprintf('.')
+        end
+end
+MW_abun_dat=abun_dat;
+MW_abun_dat.MW=MW;
+writetable(MW_abun_dat, 'Data/QconCAT_David20220124/abs_abundance/med_abun_all_MW.tsv', 'FileType','text','Delimiter','tab')
+%remove non control conditions
+abun_dat(:, {'highcell', 'highsalt', 'hightemp', 'noshaking'})=[];
+
 abun_dat(cellfun(@isempty, abun_dat.UPId), :)=[];
 abun_dat=abun_dat(:, [1, size(abun_dat,2), 2:(size(abun_dat,2)-1)]);
 %sum duplicated entries up and remove duplicates

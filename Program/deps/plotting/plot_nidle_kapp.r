@@ -32,7 +32,7 @@ plot_nidle_kapp= function(cnames, clabs, same_set) {
              scale_x_discrete(labels = clabs) + 
              labs(x='Condition', y='Count') + theme_bw() + theme(axis.text.x = element_text(angle=50, hjust=1), text=element_text(size=20), panel.grid.major.x=element_blank()), 
            height=4, width=6)
-    write.table(table(cnames[max_idx]), file = file.path(resdir, 'maxpercond.tsv'), sep = "\t", row.names=FALSE)
+    write.table(table(max_idx), file = file.path(resdir, 'maxpercond.tsv'), sep = "\t", row.names=FALSE)
     ##plot number of conditions in which a kapp could be calculated 
     num_kapp=apply(!(is.na(kapp_ndat[, colnames(kapp_ndat) %in% cnames])) & !(kapp_ndat[, colnames(kapp_ndat) %in% cnames]==0),1, sum)
     #save histogram 
@@ -104,29 +104,39 @@ plot_nidle_kapp= function(cnames, clabs, same_set) {
     #   stop("Found model reactions with assigned kcat <0 log transformation impossible. Aborting...")
     # }
     # glob_kcats[,c("viri_Kcats", "euk_Kcats", "proc_Kcats")]=log10(glob_kcats[,c("viri_Kcats", "euk_Kcats", "proc_Kcats")])
-    glob_kcats=merge(glob_kcats, kapp_ndat[, c(1,21)],by.x="Reaction", by.y="Rxns", all.x=TRUE)
+    glob_kcats=merge(glob_kcats, kapp_ndat[, c("Rxns",cnames, "kappmax")],by.x="Reaction", by.y="Rxns", all.x=TRUE)
     kapp_ndat=merge(glob_kcats[,1:2], kapp_ndat, by.x="Reaction", by.y="Rxns", all.y = TRUE)
     #plot a stacked barplot with the kcat information available from viridiplantae
     subsyslevels=unique(unlist(strsplit(glob_kcats$SubSystem, split = "\t")))
     plotdat6=lapply(subsyslevels, function(x) {
-      no_kcat=sum(!is.na(glob_kcats$viri_Kcats[grepl(x, glob_kcats$SubSystem)]))
-      no_kapp=sum(is.na(glob_kcats$viri_Kcats[grepl(x, glob_kcats$SubSystem)]) &
-                    !is.na(glob_kcats$kappmax[grepl(x, glob_kcats$SubSystem)]))
-      if (any(c(no_kcat, no_kapp)!=0)) {
-        return(data.frame(subsys=rep(x,2), type=c("Viridiplantae kcat", "NIDLE kapp"),
-                          value=c(no_kcat, no_kapp)))
+      no_kcat=sum(!is.na(glob_kcats$viri_Kcats[grepl(x, glob_kcats$SubSystem)])) #Number of reactions with kcats from viridplantae in sabioRK and BRENDA
+      no_kapp=sum(is.na(glob_kcats$viri_Kcats[grepl(x, glob_kcats$SubSystem)]) & #Number of reactions WITHOUT kcats available from sabio RK and BRENDA BUT with kappmax
+                    !is.na(glob_kcats$kappmax[grepl(x, glob_kcats$SubSystem)])) 
+      no_kappfull=sum(!apply(is.na(glob_kcats[grepl(x, glob_kcats$SubSystem), cnames]),1, any))#Total number of reactions that have kapp in all conditiosn
+      if (any(c(no_kcat, no_kapp, no_kappfull)!=0)) {
+        return(data.frame(subsys=rep(x,3), type=c("Viridiplantae kcat", "NIDLE kapp", "core NIDLE kapp"),
+                          value=c(no_kcat, no_kapp, no_kappfull)))
       } else {
         return(NULL)
       }})
     plotdat6=do.call(rbind, plotdat6)
-    plotdat6$subsys=factor(plotdat6$subsys, levels=plotdat6$subsys[which(plotdat6$type %in% "NIDLE kapp")[order(plotdat6$value[plotdat6$type %in% "NIDLE kapp"])]])
-    ggsave(file.path(resdir,'determinedkmax.pdf'), ggplot(plotdat6, aes(x=subsys, y=value, fill=type)) + geom_bar(position = "stack", stat="identity") +
-             scale_fill_manual(values=cbPalette[c(2,1)], name="Kinetic data source") + ylab('No of Reactions') + xlab("Subsystem") + theme_bw() + 
+    plotdat7=plotdat6[plotdat6$type %in% c("Viridiplantae kcat", "NIDLE kapp"),]
+    plotdat7$subsys=factor(plotdat7$subsys, levels=plotdat7$subsys[which(plotdat7$type %in% "NIDLE kapp")[order(plotdat7$value[plotdat7$type %in% "NIDLE kapp"])]])
+    ggsave(file.path(resdir,'determinedkmax.pdf'), ggplot(plotdat7, aes(x=subsys, y=value, fill=type)) + geom_bar(position = "stack", stat="identity") +
+             scale_fill_manual(values=cbPalette[c(2,1)], name="Kinetic data source") + ylab('No of Reactions') + xlab("Subsystem") + theme_classic() + 
              theme(axis.text.x = element_blank(), text=element_text(size=20)), width = 12, height = 4)
-    ggsave(file.path(resdir,'determinedkmaxlabels.pdf'), ggplot(plotdat6, aes(x=subsys, y=value, fill=type)) + geom_bar(position = "stack", stat="identity") +
-             scale_fill_manual(values=cbPalette[c(2,1)], name="Kinetic data source") + ylab('No of Reactions') + xlab("Subsystem") + theme_bw() + 
+    ggsave(file.path(resdir,'determinedkmaxlabels.pdf'), ggplot(plotdat7, aes(x=subsys, y=value, fill=type)) + geom_bar(position = "stack", stat="identity") +
+             scale_fill_manual(values=cbPalette[c(2,1)], name="Kinetic data source") + ylab('No of Reactions') + xlab("Subsystem") + theme_classic() + 
              theme(axis.text.x = element_text(angle=60, hjust=1), text=element_text(size=20)), width = 14, height = 10)
-    write.table(plotdat6, file = file.path(resdir, 'determinedkmax.tsv'),sep = "\t", row.names=FALSE)
+    write.table(plotdat7, file = file.path(resdir, 'determinedkmax.tsv'),sep = "\t", row.names=FALSE)
+    #Plot a figure only with core values
+    plotdat8=plotdat6[plotdat6$type %in% "core NIDLE kapp",]
+    plotdat8=plotdat8[plotdat8$value>0,]
+    plotdat8$subsys=factor(plotdat8$subsys, levels=as.character(plotdat8$subsys)[order(plotdat8$value)])
+    ggsave(file.path(resdir,'determinedcorekmaxlabels.pdf'), ggplot(plotdat8, aes(x=subsys, y=value)) + geom_bar(position = "stack", stat="identity") +
+             ylab('No of Reactions') + xlab("Subsystem") + theme_classic() + 
+             theme(axis.text.x = element_text(angle=60, hjust=1), text=element_text(size=20)), width = 14, height = 10)
+    write.table(plotdat8, file = file.path(resdir, 'determinedcorekmaxlabels.tsv'),sep = "\t", row.names=FALSE)
     #trim subsystems
     kapp_ndat$SubSystem=gsub("Biosynthesis of ", "",kapp_ndat$SubSystem)
     sparseSubSystem=unlist(lapply(kapp_ndat$SubSystem, function (x) {

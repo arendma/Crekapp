@@ -30,6 +30,7 @@ plotexternalcomp = function(cnames, subsys_kapp_ndat) {
       annotate(geom='text', x=min(np_comptab[!(is.na(np_comptab$NIDLE))&!(is.na(np_comptab$pFBA)),"NIDLE"])+3, y=max(np_comptab[!(is.na(np_comptab$NIDLE))&!(is.na(np_comptab$pFBA)),"pFBA"])-1, size=8,  label=paste('\u03c1 = ', round(pvnrho, 2))) +
       geom_abline(intercept = 0, slope = 1) + theme_bw() + theme(text=element_text(size=25))
     ggsave("Results/NIDLE/kcat_pFBAvn.pdf",pvn, width=7, height=7, device=grDevices::cairo_pdf)
+    write.table(np_comptab[!(is.na(np_comptab$NIDLE))&!(is.na(np_comptab$pFBA)),], "Results/NIDLE/kcat_pFBAvn.tsv", row.names = FALSE, sep="\t")
     #plot venn diagram
     venn.diagram(list(NIDLE=kapp_ndat$Reaction, pFBA=kapp_pdat$Reaction), filename="Results/NIDLE/kcat_pFBAvn_venn.png", imagetype = "png")
   }
@@ -75,6 +76,8 @@ plotexternalcomp = function(cnames, subsys_kapp_ndat) {
       if (nrow(nkcat)>0) {comp_mat[i,3:ncol(comp_mat)]=nkcat}
     }
     
+    print(paste(sum(!(is.na(comp_mat$kappmax[!(is.na(comp_mat$GECKO))])))/sum(!is.na(comp_mat$GECKO)), 
+                'of reactions with ec number annotation have a kapp_max assigned'))
     sc_plot = function(comp_mat, cnames, resdir) {
       #Plot scatter plots of GECKO assigned kcats and NIDLE calculate kapp
       #overall and per GECKO match criteria
@@ -118,7 +121,7 @@ plotexternalcomp = function(cnames, subsys_kapp_ndat) {
         theme_light() + ylab(expression(log[10]~maxkapp[NIDLE]/kcat[GECKO])) + scale_fill_discrete(labels=nicelabs) +
         theme(text = element_text(size=25), axis.title.x = element_blank()) 
       ggsave(file.path(resdir, "kcat_gvn_all_ratbox.pdf"),rp, device=grDevices::cairo_pdf)
-      write.table(plot_mat[,c('Ratio', 'GKO_Match')], file.path(resdir, "kcat_gvn_all_ratbox.tsv"), sep="\t", row.names=FALSE)
+      write.table(plot_mat[,c('Ratio', 'x')], file.path(resdir, "kcat_gvn_all_ratbox.tsv"), sep="\t", row.names=FALSE)
       
       
       mat_labels=c('org+subs', 'subs', 'org', 'any', 'SA org', 'SA_any')
