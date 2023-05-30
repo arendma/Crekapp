@@ -23,8 +23,10 @@ Edit the `Matlab_startup.m` file to add the paths of the installed dependencies.
 
 4. In Matlab run `Matlab_startup` to set path for depenencies (edit as mentioned above) (1s on Ryzen5 4000 16 GB RAM)
 
-5. In Matlab run `GECKO_startup()` to generate pcGEMs from autotrophic, mixotrohpic and heterotrophic chlamydomonas models. This will create a log file with GECKO output in the working directory. (~3h on  Ryzen5 4000 16 GB RAM)
+5. In Matlab run `GECKO_startup` to generate pcGEMs from autotrophic, mixotrohpic and heterotrophic chlamydomonas models. This will create a log file with GECKO output in the working directory. (~3h on  Ryzen5 4000 16 GB RAM)
 
-6. In Matlab run `comp_ecModel_rescale` to generate metabolic model predictions from the GEM and pcGEMs. (~2m on Ryzen5 4000 16 GB RAM)
+6. In Matlab run `iCreNIDLE` to estimate kapps with NIDLE and generate obtain comparison values for pFBA and BRENDA/SABIORK (~10 min on Ryzen 5 4000 16 GB RAM)
 
-7. In R run `Program/plotprogrep_202207.r` to generate figures and statistics presented in the paper. (30s on Ryzen5 4000 16 GB RAM)
+7. In Matlab run `comp_ecModel_rescale` to generate metabolic model predictions from the GEM and pcGEMs. (~2m on Ryzen5 4000 16 GB RAM)
+
+8. In R run `Program/plotprogrep_202207.r` to generate figures and statistics presented in the paper. (30s on Ryzen5 4000 16 GB RAM)
