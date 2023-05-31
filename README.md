@@ -19,7 +19,7 @@ Edit the `Matlab_startup.m` file to add the paths of the installed dependencies.
 
 2. Run `Rscript Program/fit_chemostatdat.r` to obtain a model for maximum acetate uptake. (On windows it is sometimes only possible to source the scripts from within the R console using `source("Program/fit_chemostat.r")`)(~2-3s on Ryzen5 4000 16 GB RAM)
 
-3. In R run `Rscript Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics. (Also here on windows alternatively you can use `source("Program/QCC_smy_main2.r")`)(~90s on Ryzen5 4000 16 GB RAM)
+3. Run `Rscript Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics. (Also here on windows alternatively you can use `source("Program/QCC_smy_main2.r")`)(~90s on Ryzen5 4000 16 GB RAM)
 
 4. In Matlab run `Matlab_startup` to set path for depenencies (edit as mentioned above) (1s on Ryzen5 4000 16 GB RAM)
 
@@ -29,4 +29,4 @@ Edit the `Matlab_startup.m` file to add the paths of the installed dependencies.
 
 7. In Matlab run `comp_ecModel_rescale` to generate metabolic model predictions from the GEM and pcGEMs. (~2m on Ryzen5 4000 16 GB RAM)
 
-8. In R run `Program/plotprogrep_202207.r` to generate figures and statistics presented in the paper. (30s on Ryzen5 4000 16 GB RAM)
+8. Run `Rscript Program/manuscript_fig.r` to generate figures and statistics presented in the paper. (60s on Ryzen5 4000 16 GB RAM)
