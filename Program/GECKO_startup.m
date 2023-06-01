@@ -28,8 +28,7 @@ if nargin<3
 end
 
 home=pwd();
-%Adapt relative_proteomics
-copyfile("Data/QconCAT_David20220124/abs_abundance/muns_relative_proteomics.txt", "Program/deps/GECKOcre/databases/relative_proteomics.txt")
+
 %import protein biomass fraction from Boyle and Morgan switch between ptot
 %by uncommenting/commenting
 GKOinf={'auto', 0.261, {'EX_co2_e', 'EX_nh4_e', 'EX_pi_e'}, 
