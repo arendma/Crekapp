@@ -109,6 +109,7 @@ plot_ecmodcomp=function() {
     plot_spearprot=expandcol(spearprot, 2:ncol(spearprot))
     colnames(plot_spearprot)=c('Condition', 'sp_cor', 'Model')
     shps2=c(16,16,17,17)
+
     labs2=c("GECKO adapted", "GECKO raw", "GECKO adapted + NIDLE", "GECKO raw + NIDLE")
     names(labs2)= names(shps2) =c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
     cols2=c('seagreen',  'skyblue4', 'seagreen2',  'lightskyblue')
