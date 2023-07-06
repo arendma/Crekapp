@@ -252,16 +252,22 @@ cre_idx=rowSums(sapply(colnames(Cre1355gxn), grepl, x=QCCagg$ProteinId, fixed=TR
 sum_stat=cbind(sum_stat, cre_amol=colSums(QCCagg[cre_idx,2:ncol(QCCagg)], na.rm = TRUE))
 cre_QCCagg=QCCagg[cre_idx,]
 plot1=ggplot(data=sum_stat, aes(x=sample, y=tot_amol)) + stat_summary(fun.y=mean, geom='bar', alpha=0.4) + geom_point() + labs(y='Total Protein content [amol/cell]') +
-  stat_summary(aes(y=cre_amol), fun.y=mean, geom='bar', fill='lightpink3') +  scale_x_discrete(labels = c('Control CC1690', 'Dark CC1690', 'High Cell CC1690', 'High Salt CC1690', 'High Temp CC1690', 'No Shaking CC1690', 'SDP OE1 UVM4', 'SDP OE2 UVM4', 'Control UVM4')) +
+  stat_summary(aes(y=cre_amol), fun.y=mean, geom='bar', fill='lightpink3') +  scale_x_discrete(labels = c('control CC1690', 'dark CC1690', 'high cell CC1690', 'high salt CC1690', 'high temp CC1690', 'no shaking CC1690', 'SDP OE1 UVM4', 'SDP OE2 UVM4', 'control UVM4')) +
   geom_point(aes(y=cre_amol), color='red') +  theme_bw(base_size=14) + theme(axis.text.x = element_text(angle=50, hjust = 1), text=element_text(size=20))  
 ggsave('Results/QconCat20220124/tot_prot.pdf', plot1, useDingbats=FALSE)
+outab=sum_stat
+outab$sample= c('control CC1690', 'dark CC1690', 'high cell CC1690', 'high salt CC1690', 'high temp CC1690', 'no shaking CC1690', 'SDP OE1 UVM4', 'SDP OE2 UVM4', 'control UVM4')
+write.table(outab, 'Results/QconCat20220124/tot_prot.tsv', row.names=FALSE, sep="\t")
 #get number of proteins measured
 sum_stat=cbind(sum_stat, tot_no=colSums(!(is.na(QCCagg[,2:ncol(QCCagg)]))))
 sum_stat=cbind(sum_stat, cre_no=colSums(!(is.na(QCCagg[cre_idx,2:ncol(QCCagg)]))))
 plot2=ggplot(data=sum_stat, aes(x=sample, y=tot_no)) + stat_summary(fun.y=mean, geom='bar', alpha=0.4) + geom_point() + labs(y='Proteins quantified') +
-  stat_summary(aes(y=cre_no), fun.y=mean, geom='bar', fill='lightpink3') +  scale_x_discrete(labels = c('Control CC1690', 'Dark CC1690', 'High Cell CC1690', 'High Salt CC1690', 'High Temp CC1690', 'No Shaking CC1690', 'SDP OE1 UVM4', 'SDP OE2 UVM4', 'Control UVM4')) +
+  stat_summary(aes(y=cre_no), fun.y=mean, geom='bar', fill='lightpink3') +  scale_x_discrete(labels =  c('control CC1690', 'dark CC1690', 'high cell CC1690', 'high salt CC1690', 'high temp CC1690', 'no shaking CC1690', 'SDP OE1 UVM4', 'SDP OE2 UVM4', 'control UVM4')) +
   geom_point(aes(y=cre_no), color='red') +  theme_bw(base_size=14) + theme(axis.text.x = element_text(angle=50, hjust = 1), text=element_text(size=20))  
 ggsave('Results/QconCat20220124/no_prot.pdf', plot2, useDingbats=FALSE)
+outab=sum_stat[, c("sample", "tot_no", "cre_no")]
+outab$sample= c('control CC1690', 'dark CC1690', 'high cell CC1690', 'high salt CC1690', 'high temp CC1690', 'no shaking CC1690', 'SDP OE1 UVM4', 'SDP OE2 UVM4', 'control UVM4')
+write.table(outab, 'Results/QconCat20220124/no_prot.tsv', row.names=FALSE, sep="\t")
 #limit on fully measured proteins
 ns_QCCagg=QCCagg[rowSums(is.na(QCCagg))==0,]
 ns_cre_QCCagg=cre_QCCagg[rowSums(is.na(cre_QCCagg))==0, ]

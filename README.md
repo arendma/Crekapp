@@ -17,14 +17,16 @@ Edit the `Matlab_startup.m` file to add the paths of the installed dependencies.
 ## Reproducing results (on linux machine - scripts produce verbose output to comman line no reason to worry)
 1. Set this repository as working directory 
 
-2. In R run `Program/fit_chemostatdat.r` to obtain a model for maximum acetate uptake. (On windows it is sometimes only possible to source the scripts from within the R console using `source("Program/fit_chemostat.r")`)(~2-3s on Ryzen5 4000 16 GB RAM)
+2. Run `Rscript Program/fit_chemostatdat.r` to obtain a model for maximum acetate uptake. (On windows it is sometimes only possible to source the scripts from within the R console using `source("Program/fit_chemostat.r")`)(~2-3s on Ryzen5 4000 16 GB RAM)
 
-3. In R run `Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics. (Also here on windows alternatively you can use `source("Program/QCC_smy_main2.r")`)(~90s on Ryzen5 4000 16 GB RAM)
+3. Run `Rscript Program/QCC_smy_main2.r` to process the raw QCC data into and generate plots of QconCat proteomics overview statistics. (Also here on windows alternatively you can use `source("Program/QCC_smy_main2.r")`)(~90s on Ryzen5 4000 16 GB RAM)
 
 4. In Matlab run `Matlab_startup` to set path for depenencies (edit as mentioned above) (1s on Ryzen5 4000 16 GB RAM)
 
-5. In Matlab run `GECKO_startup()` to generate pcGEMs from autotrophic, mixotrohpic and heterotrophic chlamydomonas models. This will create a log file with GECKO output in the working directory. (~3h on  Ryzen5 4000 16 GB RAM)
+5. In Matlab run `GECKO_startup` to generate pcGEMs from autotrophic, mixotrohpic and heterotrophic chlamydomonas models. This will create a log file with GECKO output in the working directory. (~3h on  Ryzen5 4000 16 GB RAM)
 
-6. In Matlab run `comp_ecModel_rescale` to generate metabolic model predictions from the GEM and pcGEMs. (~2m on Ryzen5 4000 16 GB RAM)
+6. In Matlab run `iCreNIDLE` to estimate kapps with NIDLE and generate obtain comparison values for pFBA and BRENDA/SABIORK (~10 min on Ryzen 5 4000 16 GB RAM)
 
-7. In R run `Program/plotprogrep_202207.r` to generate figures and statistics presented in the paper. (30s on Ryzen5 4000 16 GB RAM)
+7. In Matlab run `comp_ecModel_rescale` to generate metabolic model predictions from the GEM and pcGEMs. (~2m on Ryzen5 4000 16 GB RAM)
+
+8. Run `Rscript Program/manuscript_fig.r` to generate figures and statistics presented in the paper. (60s on Ryzen5 4000 16 GB RAM)

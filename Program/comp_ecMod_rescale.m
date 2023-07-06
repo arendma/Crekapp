@@ -69,10 +69,47 @@ disp(['RMSE FBA is ', num2str(RMSE_FBA), '. RMSE NIDLE adapted is ' num2str(RMSE
 %compare predicted enzyme usage
 %import enzyme abundance 
 abun_dat=readtable('Data/QconCAT_David20220124/abs_abundance/med_abun_all.tsv', 'FileType', 'text');
-%remove non control conditions
-abun_dat(:, {'highcell', 'highsalt', 'hightemp', 'noshaking'})=[];
 %adapt Uniprot names
 abun_dat.UPId=JGItoUP(abun_dat.ProteinId);
+%%EXPORT A TABLE WITH MASS WEIGHT INFO
+%Load swissprot data:
+swissprot = load('Program/deps/GECKOcre/databases/ProtDatabase.mat');
+swissprot = swissprot.swissprot;
+for i = 1:length(swissprot)
+    swissprot{i,3} = strsplit(swissprot{i,3},' ');
+end
+MW=nan(size(abun_dat, 1),1);
+MW_det=zeros(size(abun_dat,1),1);
+MW_ave  = mean(cell2mat(swissprot(:,5)));
+for i = 1:length(abun_dat.UPId)
+        MW(i) = MW_ave;
+        %Find gene in swissprot database:
+        %Check uniprot IDS
+        if sum(strcmp(swissprot(:,1), abun_dat.UPId{i}))==1
+            MW(i) = swissprot{strcmp(swissprot(:,1), abun_dat.UPId{i}),5};
+            MW_det(i)=1;
+        elseif sum(strcmp(swissprot(:,1), abun_dat.UPId{i})) >1
+            error(['more than 1 matching entry for uniprot entry ' abun_dat.UPId{i} 'detected. Check swissprot data for duplicates.'])
+        else
+            %CHeck aliases
+            for j = 1:length(swissprot)
+                %Compare with swiss prot gene name and uniprot ID
+                if sum(strcmp(swissprot{j,3},abun_dat.UPId{i})) > 0
+                    MW(i) = swissprot{j,5};	%g/mol
+                    MW_det(i)=1; %Array indicating if entry was found in database - only for debug
+                end
+            end
+        end
+        if rem(i,100) == 0 || i == length(abun_dat.UPId)
+            fprintf('.')
+        end
+end
+MW_abun_dat=abun_dat;
+MW_abun_dat.MW=MW;
+writetable(MW_abun_dat, 'Data/QconCAT_David20220124/abs_abundance/med_abun_all_MW.tsv', 'FileType','text','Delimiter','tab')
+%remove non control conditions
+abun_dat(:, {'highcell', 'highsalt', 'hightemp', 'noshaking'})=[];
+
 abun_dat(cellfun(@isempty, abun_dat.UPId), :)=[];
 abun_dat=abun_dat(:, [1, size(abun_dat,2), 2:(size(abun_dat,2)-1)]);
 %sum duplicated entries up and remove duplicates
@@ -103,6 +140,8 @@ abun_dat(:, 3:end)=array2table(table2array(abun_dat(:, 3:end))./cell2mat(mod_inf
 res=cell(size(mod_inf, 1), 4);
 %spearman correlation
 spear=nan(size(mod_inf, 1), 4);
+%RMSE on log scale
+log_RMSE=nan(size(mod_inf, 1), 4);
 
 %column names 
 col_names={'rawGKO', 'adpGKO', 'rawGKONDL', 'adpGKONDL'};
@@ -133,7 +172,8 @@ for i=1:size(mod_inf, 1)
         plotdat=table2array(tmpres(:, 2:end));
         fidx=plotdat(:,2)>0;
         n=sum(fidx);
-        spear(i,j)=corr(log10(plotdat(fidx,1)), log10(plotdat(fidx,2)), 'type', 'Spearman'); 
+        spear(i,j)=corr(log10(plotdat(fidx,1)), log10(plotdat(fidx,2)), 'type', 'Spearman');
+        log_RMSE(i,j)=sqrt(mean((log10(plotdat(fidx,1))-log10(plotdat(fidx,2))).^2));
         figure
         scatter(plotdat(fidx, 1), plotdat(fidx,2))
         title(['n = ' num2str(n)])
@@ -141,138 +181,17 @@ for i=1:size(mod_inf, 1)
         set(gca, 'yscale', 'log')
         set(gcf, 'PaperUnits', 'inches');
         set(gcf, 'PaperPosition', [0 0 8 8]);
-        saveas(gcf, fullfile('Results', 'eccomp', 'abunvse', [mod_inf.cond_id{i} '_' col_names{j} '.svg']))
+        saveas(gcf, fullfile('Results', 'eccomp', 'abunvse', [mod_inf.cond{i} '_' col_names{j} '.svg']))
         close
+        writetable(array2table(plotdat, "VariableNames", {'abs_prot', 'enz_usg'}), fullfile('Results', 'eccomp', 'abunvse', [mod_inf.cond{i} '_' col_names{j} '.tsv']), 'FileType', 'text', 'Delimiter','\t');
     end
 end
 
 spear=array2table(spear, 'VariableNames', col_names, 'RowNames', mod_inf.cond);
-writetable(spear, fullfile('Results', 'eccomp', 'abunvse', 'spearman.tsv'), 'FileType', 'text', 'Delimiter', 'tab', 'WriteRowNames',true);
+log_RMSE=array2table(log_RMSE, 'VariableNames', col_names, 'RowNames', mod_inf.cond);
 
+writetable(spear, fullfile('Results', 'eccomp', 'abunvse', 'spearman.tsv'), 'FileType', 'text', 'Delimiter', 'tab', 'WriteRowNames',true);
+writetable(log_RMSE, fullfile('Results', 'eccomp', 'abunvse', 'RMSE.tsv'), 'FileType', 'text', 'Delimiter', 'tab', 'WriteRowNames',true);
 %match reactions to protein data
     
 
-
-
-
-%OLDCODE
-% %simulate normal fba, ecfba with bounds, and ecFBA without bounds with upper boudns from chemostat
-% %Intialize result matrix columns: 1- normal FBA , 2-bounded ecFBA with different protein ,
-% % 3-unbounden ecFBA, 4-unbounded ecFBA with different protein, 5- unbounded
-% % geFBA with same protein constrain, 6- unbounded geFBA with different 7-
-% % FBA with old biomass reaction
-% % protein constrain
-%     FBAsol=nan(size(cstat_dat, 1), 6);
-%     %intialise comparison matrix for uptake bounds
-%     %Check wether smModel, ge and canonical have the same uptake reactions
-%     glob_upt={};
-%     for i=1:3
-%         model=gems{i,5};
-%         [~,temp_upt]=findExcRxns(model);
-%         glob_upt=union(glob_upt, model.rxns(temp_upt));
-%     end
-%     sm_glob_upt={};
-%      for i=1:3
-%          model=gems{i,3};
-%         [~,temp_upt]=findExcRxns(model);
-%         sm_glob_upt=union(sm_glob_upt, model.rxns(temp_upt));
-%      end
-%      ge_glob_upt={};
-%      for i=1:3
-%          model=gems{i,4};
-%          %since uptake reactions have been split into irrevers. 
-%          %they are not found by findExcRxns
-%          [temp_upt, ~] = findExcRxns(model);
-%          temp_upt=find(temp_upt);
-%          temp_upt=temp_upt((model.ub(temp_upt)>0 )&( model.ub(temp_upt)<1000));
-%          %remove pool exchange reaction
-%          temp_upt=setdiff(temp_upt, findRxnIDs(model, {'prot_pool_exchange'}));
-%          ge_glob_upt=union(ge_glob_upt, model.rxns(temp_upt));
-%      end
-%         
-%     if ~isequal(sm_glob_upt, glob_upt, replace(ge_glob_upt, '_REV', ''))
-%         error('ec and canonical models have different uptake reaction, can not concatenate uptake bounds for all model')
-%     end
-%     uptake_bounds=nan(length(glob_upt),6*size(cstat_dat, 1));
-%     for j=1:6
-%         for i=1:size(cstat_dat, 1)
-%             up_bounds=cstat_dat{i, 5:8};
-%             uptake_rxns={'EX_co2_e', 'EX_nh4_e', 'EX_pi_e', 'EX_ac_e'};
-%             if j==1
-%                  %for j=1 take normal FBA model
-%                  model=gems{ismember(gems(:,1), cstat_dat{i,1}), 2};
-%             elseif ismember(j, [2,3,4])
-%                 %for j=2 or 3  or 4 take ec mobel
-%                 model=gems{ismember(gems(:,1), cstat_dat{i,1}), 3};
-%             elseif ismember(j, [5,6])
-%                 %for j=5 or 6 take ge model
-%                 model=gems{ismember(gems(:,1), cstat_dat{i,1}), 4};
-% 
-%             end 
-%             if ismember(j, [1,2])
-%                 %for j=1,2 take the chemostat uptake bounds for
-%                 %reversible uptake reactions
-%                 model=changeRxnBounds(model, uptake_rxns(~isnan(up_bounds)), -(up_bounds(~isnan(up_bounds))), 'l');
-% if j==2                
-% %set upper bounds according to fs and proteinmass
-%                 model.ub(findRxnIDs(model, {'ER_pool_TG_'}))=Ptot{ismember(Ptot(:,1), cstat_dat{i,1}),2}*fs;
-% end
-%             elseif j==3
-%                 %put all influx constrains which are not 0 to -1000
-%                 [~, upt]=findExcRxns(model);
-%                 model.lb(upt&model.lb~=0)=-1000;
-%                 %set mixotrophic protein constrain for all models
-%                 model.ub(findRxnIDs(model, {'ER_pool_TG_'}))=Ptot{ismember(Ptot(:,1), 'mixo'),2}*fs;
-% 
-%                 elseif j==4
-%                 %put all influx constrains which are not 0 to -1000
-% 
-%                 [~, upt]=findExcRxns(model);
-%                 model.lb(upt&model.lb~=0)=-1000;
-%                 %set upper bounds according to fs and proteinmass
-%                 model.ub(findRxnIDs(model, {'ER_pool_TG_'}))=Ptot{ismember(Ptot(:,1), cstat_dat{i,1}),2}*fs;
-%             elseif j==5
-%                   %put all influx constrains which are not 0 to -1000
-%                   [temp_upt, ~] = findExcRxns(model);
-%                   temp_upt=temp_upt&model.ub>0;
-%                    temp_upt=find(temp_upt);
-%                    %remove protein pool reaction
-%                    temp_upt=setdiff(temp_upt, findRxnIDs(model, {'prot_pool_exchange'}));
-%                    model.ub(temp_upt)=1000;
-%                 %set mixotrophic protein constrain for all models
-%                 model.ub(findRxnIDs(model, {'prot_pool_exchange'}))=Ptot{ismember(Ptot(:,1), 'mixo'),2}*fs;
-%             elseif j==6
-%                   %put all influx constrains which are not 0 to -1000
-%                   [temp_upt, ~] = findExcRxns(model);
-%                   temp_upt=temp_upt&model.ub>0;
-%                    temp_upt=find(temp_upt);
-%                    %remove protein pool reaction
-%                    temp_upt=setdiff(temp_upt, findRxnIDs(model, {'prot_pool_exchange'}));
-%                    model.ub(temp_upt)=1000;
-% %set upper bounds according to fs and proteinmass
-%                 model.ub(findRxnIDs(model, {'prot_pool_exchange'}))=Ptot{ismember(Ptot(:,1), cstat_dat{i,1}),2}*fs;
-%             end
-%             if ismember(j, [1,2,3,4])
-%                 %reversible uptake reactions
-%             uptake_bounds(:,(size(cstat_dat,1)*(j-1))+i)=model.lb(findRxnIDs(model, glob_upt));
-%             else
-%                 %irreversible uptake reactions
-%             uptake_bounds(:,(size(cstat_dat,1)*(j-1))+i)=model.ub(findRxnIDs(model, append(glob_upt, '_REV')));    
-%             end
-%             
-%             disp(append('Optimizing for ', model.rxns(logical(model.c))))
-%             sol=optimizeCbModel(model);
-%             if sol.stat==1
-%                 FBAsol(i,j)=sol.f;
-%             else
-%                 disp(cstat_dat(i,:))
-%                 warning('Problem could not be solved')
-%             end
-%         end
-%     end
-%     %create output table 
-%     res_tab=[cstat_dat(:,2:3), array2table(FBAsol, 'VariableNames', {'canonic', 'uptake_diffptot_smom', 'smom', 'diffptot_smom', 'gecko', 'diffptot_gecko'})]
-%     if ~isfolder('Results/eccomp/')
-%         mkdir('Results/eccomp')
-%     end
-%     writetable(res_tab, 'Results/eccomp/bmrescale_chemostat_comp_boyleptot.txt', 'Delimiter', '\t')
