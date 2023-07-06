@@ -109,13 +109,15 @@ plot_ecmodcomp=function() {
     plot_spearprot=expandcol(spearprot, 2:ncol(spearprot))
     colnames(plot_spearprot)=c('Condition', 'sp_cor', 'Model')
     shps2=c(16,16,17,17)
-    names(shps2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
+
+    labs2=c("GECKO adapted", "GECKO raw", "GECKO adapted + NIDLE", "GECKO raw + NIDLE")
+    names(labs2)= names(shps2) =c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
     cols2=c('seagreen',  'skyblue4', 'seagreen2',  'lightskyblue')
     names(cols2)=c('adpGKO', 'rawGKO', 'adpGKONDL', 'rawGKONDL')
     plot2=ggplot(plot_spearprot, aes(x=sp_cor ,y=Condition, color=Model, shape=Model)) + geom_jitter(size=5,alpha=0.7, height=0.1, width=0) +
       theme_bw() + theme(text=element_text(size=25), legend.position="bottom") + 
-      scale_color_manual(values=cols2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) + 
-      scale_shape_manual(values=shps2, labels=c("GECKO adapted", "GECKO adapted + NIDLE", "GECKO raw", "GECKO raw + NIDLE")) +
+      scale_color_manual(values=cols2, labels=labs2) + 
+      scale_shape_manual(values=shps2, labels=labs2) +
       xlab(xlab)
     ggsave(gsub("tsv$", "pdf", perffile), plot2, width=13, height=4, useDingbats=FALSE)
   }
